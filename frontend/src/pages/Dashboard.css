@@ -123,6 +123,15 @@
   color: #e53935;
 }
 
+.recipe-card-title {
+  text-decoration: none;
+  color: inherit;
+}
+
+.recipe-card-title:hover h3 {
+  color: var(--accent);
+}
+
 .recipe-card h3 {
   font-size: 18px;
   margin: 0;

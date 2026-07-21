@@ -36,10 +36,19 @@ const deleteUserById = async (id) => {
   return result.rows[0];
 };
 
+const updatePasswordById = async (id, hashedPassword) => {
+  const result = await pool.query(
+    "UPDATE users SET password = $1 WHERE id = $2 RETURNING *",
+    [hashedPassword, id],
+  );
+  return result.rows[0];
+};
+
 module.exports = {
   createUser,
   findUserByEmail,
   getUserById,
   updateUserById,
   deleteUserById,
+  updatePasswordById,
 };

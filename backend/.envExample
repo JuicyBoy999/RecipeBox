@@ -5,3 +5,11 @@ DB_PORT=5432
 DB_USER=your_database_user
 DB_PASS=your_database_password
 DB_HOST=localhost
+FRONTEND_URL=http://localhost:5173
+
+# Optional: real SMTP for password-reset emails. If left unset, a free
+# Ethereal test inbox is used automatically (preview link logged to console).
+EMAIL_HOST=
+EMAIL_PORT=587
+EMAIL_USER=
+EMAIL_PASS=

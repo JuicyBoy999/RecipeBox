@@ -2,11 +2,15 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import AddEditRecipe from "./pages/AddEditRecipe";
+import RecipeDetail from "./pages/RecipeDetail";
 import Pantry from "./pages/Pantry";
 import AddEditPantryItem from "./pages/AddEditPantryItem";
 import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./service/ProtectedRoute";
 
 function RootRedirect() {
@@ -22,6 +26,8 @@ function App() {
         <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route
           path="/dashboard"
           element={
@@ -35,6 +41,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddEditRecipe />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recipes/:id"
+          element={
+            <ProtectedRoute>
+              <RecipeDetail />
             </ProtectedRoute>
           }
         />
@@ -78,6 +92,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

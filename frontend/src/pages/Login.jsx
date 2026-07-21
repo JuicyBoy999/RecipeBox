@@ -76,6 +76,9 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </label>
+            <Link to="/forgot-password" className="forgot-link">
+              Forgot password?
+            </Link>
             <button type="submit" className="primary-button auth-submit" disabled={loading}>
               {loading ? "Signing in..." : "Sign In"}
             </button>

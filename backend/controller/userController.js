@@ -4,9 +4,13 @@ const {
   getUserById,
   updateUserById,
   deleteUserById,
+  updatePasswordById,
 } = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const JWT = require("jsonwebtoken");
+const { sendPasswordResetEmail } = require("../utils/mailer");
+
+const RESET_TOKEN_PURPOSE = "password-reset";
 
 const register = async (req, res) => {
   try {
@@ -98,10 +102,61 @@ const deleteProfile = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Please enter your email" });
+    }
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ message: "Email is not registered" });
+    }
+    const resetToken = JWT.sign(
+      { id: user.id, purpose: RESET_TOKEN_PURPOSE },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" },
+    );
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    await sendPasswordResetEmail(user.email, resetLink);
+    res.status(200).json({ message: `Reset link sent to ${email}` });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to send reset link", error: e.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Missing reset token or new password" });
+    }
+    let decoded;
+    try {
+      decoded = JWT.verify(token, process.env.JWT_SECRET);
+    } catch {
+      return res.status(400).json({ message: "This reset link is invalid or has expired" });
+    }
+    if (decoded.purpose !== RESET_TOKEN_PURPOSE) {
+      return res.status(400).json({ message: "This reset link is invalid or has expired" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const user = await updatePasswordById(decoded.id, hashedPassword);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to reset password", error: e.message });
+  }
+};
+
 module.exports = {
   register,
   login,
   getProfile,
   updateProfile,
   deleteProfile,
+  forgotPassword,
+  resetPassword,
 };

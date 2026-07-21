@@ -100,6 +100,15 @@
   outline-offset: 1px;
 }
 
+.forgot-link {
+  align-self: flex-end;
+  margin-top: -6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
 .auth-submit {
   justify-content: center;
   margin-top: 8px;

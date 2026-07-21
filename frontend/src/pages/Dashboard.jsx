@@ -147,7 +147,9 @@ function Dashboard() {
                       <StarIcon filled={recipe.is_favorite} />
                     </button>
                   </div>
-                  <h3>{recipe.title}</h3>
+                  <Link to={`/recipes/${recipe.id}`} className="recipe-card-title">
+                    <h3>{recipe.title}</h3>
+                  </Link>
                   <p className="recipe-meta">{recipe.cook_time_minutes} min</p>
                   <div className="recipe-card-footer">
                     <Link to={`/recipes/${recipe.id}/edit`} title="Edit">
