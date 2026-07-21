@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import AddEditRecipe from "./pages/AddEditRecipe";
 import Pantry from "./pages/Pantry";
 import AddEditPantryItem from "./pages/AddEditPantryItem";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./service/ProtectedRoute";
 
 function RootRedirect() {
@@ -66,6 +67,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddEditPantryItem />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />
