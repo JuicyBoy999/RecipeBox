@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import Sidebar from "../component/Sidebar";
+import { ArrowLeftIcon } from "../component/icons";
 import { addPantryItem, updatePantryItem, getPantryItemById } from "../service/Api";
 import "./FormPage.css";
 
@@ -66,39 +68,63 @@ function AddEditPantryItem() {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div className="form-page">
-      <Link to="/pantry" className="back-link">
-        ← Back
-      </Link>
-      <h1>{isEditMode ? "Edit Pantry Item" : "Add Pantry Item"}</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Item name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Unit (e.g. cups, g, pcs)"
-          value={unit}
-          onChange={(e) => setUnit(e.target.value)}
-        />
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Item"}
-        </button>
-      </form>
+    <div className="app-shell">
+      <Sidebar />
+      <main className="app-main">
+        <div className="app-main-inner form-page-inner form-page-narrow">
+          <Link to="/pantry" className="back-link">
+            <ArrowLeftIcon /> Back to Pantry
+          </Link>
+          <h1>{isEditMode ? "Edit Pantry Item" : "Add Pantry Item"}</h1>
+          <p className="subhead">
+            {isEditMode ? "Update the details below." : "Track a new ingredient in your pantry."}
+          </p>
+
+          {loading ? (
+            <p className="hint">Loading...</p>
+          ) : (
+            <form className="form-card" onSubmit={handleSubmit}>
+              <label className="field field-full">
+                <span>Item name</span>
+                <input
+                  type="text"
+                  placeholder="e.g. Flour"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
+
+              <div className="field-row">
+                <label className="field">
+                  <span>Quantity</span>
+                  <input
+                    type="number"
+                    placeholder="2"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </label>
+                <label className="field">
+                  <span>Unit</span>
+                  <input
+                    type="text"
+                    placeholder="e.g. cups, g, pcs"
+                    value={unit}
+                    onChange={(e) => setUnit(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="primary-button" disabled={saving}>
+                  {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Item"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import Navbar from "../component/Navbar";
+import Sidebar from "../component/Sidebar";
 import { getProfile, updateProfile, deleteProfile } from "../service/Api";
 import "../component/Modal.css";
+import "./FormPage.css";
 import "./Profile.css";
 
 function Profile() {
@@ -49,14 +50,6 @@ function Profile() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("userName");
-    toast.success("Logged out");
-    navigate("/login");
-  };
-
   const confirmDeleteAccount = async () => {
     setShowDeleteConfirm(false);
     try {
@@ -71,35 +64,54 @@ function Profile() {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div>
-      <Navbar />
-      <div className="profile-page">
-        <h1>Profile</h1>
-        <form onSubmit={handleSave}>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input type="email" value={email} disabled />
-          <button type="submit" disabled={saving}>
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </form>
+    <div className="app-shell">
+      <Sidebar />
+      <main className="app-main">
+        <div className="app-main-inner form-page-inner form-page-narrow">
+          <p className="eyebrow">Account</p>
+          <h1>Profile</h1>
+          <p className="subhead">Manage your name and account.</p>
 
-        <button className="secondary-button" onClick={handleLogout}>
-          Logout
-        </button>
-        <button className="danger-button" onClick={() => setShowDeleteConfirm(true)}>
-          Delete Account
-        </button>
-      </div>
+          {loading ? (
+            <p className="hint">Loading...</p>
+          ) : (
+            <>
+              <form className="form-card" onSubmit={handleSave}>
+                <div className="profile-avatar">{name.charAt(0).toUpperCase() || "?"}</div>
+                <label className="field field-full">
+                  <span>Name</span>
+                  <input
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+                <label className="field field-full">
+                  <span>Email</span>
+                  <input type="email" value={email} disabled />
+                </label>
+                <div className="form-actions">
+                  <button type="submit" className="primary-button" disabled={saving}>
+                    {saving ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+
+              <div className="danger-zone">
+                <div>
+                  <h3>Delete account</h3>
+                  <p>Permanently remove your account, recipes, and pantry items.</p>
+                </div>
+                <button className="danger-button" onClick={() => setShowDeleteConfirm(true)}>
+                  Delete Account
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
 
       {showDeleteConfirm && (
         <div className="modal-overlay">

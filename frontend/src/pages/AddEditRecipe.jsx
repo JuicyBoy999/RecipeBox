@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import Sidebar from "../component/Sidebar";
+import { ArrowLeftIcon } from "../component/icons";
 import { addRecipe, updateRecipe, getRecipeById } from "../service/Api";
 import "./FormPage.css";
 
@@ -72,51 +74,84 @@ function AddEditRecipe() {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
-    <div className="form-page">
-      <Link to="/dashboard" className="back-link">
-        ← Back
-      </Link>
-      <h1>{isEditMode ? "Edit Recipe" : "Add Recipe"}</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Recipe title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Cook time (minutes)"
-          value={cookTimeMinutes}
-          onChange={(e) => setCookTimeMinutes(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Category (e.g. Breakfast, Dessert)"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-        <textarea
-          placeholder="Ingredients (one per line)"
-          rows={4}
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
-        />
-        <textarea
-          placeholder="Instructions"
-          rows={6}
-          value={instructions}
-          onChange={(e) => setInstructions(e.target.value)}
-        />
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Recipe"}
-        </button>
-      </form>
+    <div className="app-shell">
+      <Sidebar />
+      <main className="app-main">
+        <div className="app-main-inner form-page-inner">
+          <Link to="/dashboard" className="back-link">
+            <ArrowLeftIcon /> Back to Dashboard
+          </Link>
+          <h1>{isEditMode ? "Edit Recipe" : "Add Recipe"}</h1>
+          <p className="subhead">
+            {isEditMode ? "Update the details below." : "Fill in the details for your new recipe."}
+          </p>
+
+          {loading ? (
+            <p className="hint">Loading...</p>
+          ) : (
+            <form className="form-card" onSubmit={handleSubmit}>
+              <label className="field field-full">
+                <span>Recipe title</span>
+                <input
+                  type="text"
+                  placeholder="e.g. Chocolate Chip Cookies"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </label>
+
+              <div className="field-row">
+                <label className="field">
+                  <span>Cook time (minutes)</span>
+                  <input
+                    type="number"
+                    placeholder="25"
+                    value={cookTimeMinutes}
+                    onChange={(e) => setCookTimeMinutes(e.target.value)}
+                  />
+                </label>
+                <label className="field">
+                  <span>Category</span>
+                  <input
+                    type="text"
+                    placeholder="e.g. Breakfast, Dessert"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              <div className="field-row">
+                <label className="field">
+                  <span>Ingredients</span>
+                  <textarea
+                    placeholder="One per line"
+                    rows={8}
+                    value={ingredients}
+                    onChange={(e) => setIngredients(e.target.value)}
+                  />
+                </label>
+                <label className="field">
+                  <span>Instructions</span>
+                  <textarea
+                    placeholder="Step by step"
+                    rows={8}
+                    value={instructions}
+                    onChange={(e) => setInstructions(e.target.value)}
+                  />
+                </label>
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="primary-button" disabled={saving}>
+                  {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Recipe"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </main>
     </div>
   );
 }

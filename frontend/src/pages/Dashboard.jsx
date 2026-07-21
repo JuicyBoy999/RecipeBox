@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import Navbar from "../component/Navbar";
+import Sidebar from "../component/Sidebar";
+import { StarIcon, EditIcon, TrashIcon, RefreshIcon, SearchIcon } from "../component/icons";
 import { getRecipes, deleteRecipe, toggleFavorite } from "../service/Api";
 import "../component/Modal.css";
 import "./Dashboard.css";
@@ -68,88 +69,100 @@ function Dashboard() {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="dashboard">
-        <div className="dashboard-header">
-          <p className="greeting">Hello, {userName || "there"}!</p>
-          <h1>What would you like to cook?</h1>
-        </div>
-
-        <div className="category-chips">
-          <button
-            className={!selectedCategory ? "chip active" : "chip"}
-            onClick={() => setSelectedCategory(null)}
-          >
-            All
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={selectedCategory === category ? "chip active" : "chip"}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        <div className="dashboard-toolbar">
-          <input
-            type="text"
-            placeholder="Search recipes by title"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button onClick={loadRecipes} title="Refresh">
-            ⟳
-          </button>
-          <button
-            className={showFavoritesOnly ? "favorite-toggle active" : "favorite-toggle"}
-            onClick={() => setShowFavoritesOnly((prev) => !prev)}
-            title="Show favorites only"
-          >
-            {showFavoritesOnly ? "★" : "☆"}
-          </button>
-        </div>
-
-        <div className="recipe-count">Popular Recipes ({recipes.length})</div>
-
-        {loading ? (
-          <p>Loading...</p>
-        ) : visibleRecipes.length === 0 ? (
-          <p className="empty-state">
-            {recipes.length === 0
-              ? "No recipes yet. Add your first one!"
-              : "No recipes match your filters."}
-          </p>
-        ) : (
-          <div className="recipe-list">
-            {visibleRecipes.map((recipe) => (
-              <div className="recipe-card" key={recipe.id}>
-                <div>
-                  <h3>{recipe.title}</h3>
-                  <p className="recipe-meta">
-                    {recipe.category ? `${recipe.category} · ` : ""}
-                    {recipe.cook_time_minutes} min
-                  </p>
-                </div>
-                <div className="recipe-actions">
-                  <button onClick={() => handleToggleFavorite(recipe)} title="Favorite">
-                    {recipe.is_favorite ? "★" : "☆"}
-                  </button>
-                  <Link to={`/recipes/${recipe.id}/edit`} title="Edit">
-                    ✎
-                  </Link>
-                  <button onClick={() => setRecipeToDelete(recipe)} title="Delete">
-                    🗑
-                  </button>
-                </div>
-              </div>
-            ))}
+    <div className="app-shell">
+      <Sidebar />
+      <main className="app-main">
+        <div className="app-main-inner">
+          <div className="dashboard-header">
+            <div>
+              <p className="eyebrow">Hello, {userName || "there"}</p>
+              <h1>What would you like to cook?</h1>
+            </div>
+            <div className="dashboard-search">
+              <SearchIcon />
+              <input
+                type="text"
+                placeholder="Search recipes by title"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
-        )}
-      </div>
+
+          <div className="dashboard-toolbar">
+            <div className="category-chips">
+              <button
+                className={!selectedCategory ? "chip active" : "chip"}
+                onClick={() => setSelectedCategory(null)}
+              >
+                All
+              </button>
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  className={selectedCategory === category ? "chip active" : "chip"}
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+            <div className="dashboard-toolbar-actions">
+              <span className="recipe-count">{recipes.length} recipes</span>
+              <button className="icon-button" onClick={loadRecipes} title="Refresh">
+                <RefreshIcon />
+              </button>
+              <button
+                className={showFavoritesOnly ? "icon-button active" : "icon-button"}
+                onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                title="Show favorites only"
+              >
+                <StarIcon filled={showFavoritesOnly} />
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <p className="hint">Loading...</p>
+          ) : visibleRecipes.length === 0 ? (
+            <div className="empty-state">
+              <h3>{recipes.length === 0 ? "No recipes yet" : "No recipes match"}</h3>
+              <p>
+                {recipes.length === 0
+                  ? "Add your first recipe to get started."
+                  : "Try a different category, search, or clear filters."}
+              </p>
+            </div>
+          ) : (
+            <div className="recipe-grid">
+              {visibleRecipes.map((recipe) => (
+                <div className="recipe-card" key={recipe.id}>
+                  <div className="recipe-card-top">
+                    {recipe.category && <span className="badge">{recipe.category}</span>}
+                    <button
+                      className={recipe.is_favorite ? "star-button active" : "star-button"}
+                      onClick={() => handleToggleFavorite(recipe)}
+                      title="Favorite"
+                    >
+                      <StarIcon filled={recipe.is_favorite} />
+                    </button>
+                  </div>
+                  <h3>{recipe.title}</h3>
+                  <p className="recipe-meta">{recipe.cook_time_minutes} min</p>
+                  <div className="recipe-card-footer">
+                    <Link to={`/recipes/${recipe.id}/edit`} title="Edit">
+                      <EditIcon /> Edit
+                    </Link>
+                    <button onClick={() => setRecipeToDelete(recipe)} title="Delete">
+                      <TrashIcon /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
 
       {recipeToDelete && (
         <div className="modal-overlay">

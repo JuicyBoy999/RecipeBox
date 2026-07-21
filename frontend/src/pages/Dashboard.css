@@ -1,35 +1,70 @@
-.dashboard {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-  text-align: left;
+.dashboard-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
 }
 
-.dashboard-header .greeting {
-  color: var(--text);
-  margin: 0;
+.eyebrow {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
 }
 
 .dashboard-header h1 {
-  margin: 4px 0 20px;
-  font-size: 26px;
+  font-size: 30px;
+}
+
+.dashboard-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  min-width: 280px;
+  height: 44px;
+}
+
+.dashboard-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14.5px;
+  color: var(--text-h);
+  width: 100%;
+}
+
+.dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
 }
 
 .category-chips {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 8px;
-  margin-bottom: 16px;
 }
 
 .chip {
   padding: 8px 16px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: transparent;
+  background: var(--surface);
   color: var(--text);
   font-weight: 600;
+  font-size: 13.5px;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -40,88 +75,93 @@
   color: #fff;
 }
 
-.dashboard-toolbar {
+.dashboard-toolbar-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
-}
-
-.dashboard-toolbar input {
-  flex: 1;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--code-bg);
-  color: var(--text-h);
-}
-
-.dashboard-toolbar button {
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.dashboard-toolbar button.favorite-toggle.active {
-  color: #e53935;
-  border-color: #e53935;
 }
 
 .recipe-count {
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 13.5px;
   color: var(--text);
+  margin-right: 4px;
 }
 
-.empty-state {
-  text-align: center;
-  color: var(--text);
-  padding: 40px 0;
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
 }
 
-.recipe-list {
+.recipe-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.recipe-card {
+.recipe-card-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 14px 16px;
-  border-radius: 12px;
-  background: var(--code-bg);
-  border: 1px solid var(--border);
+}
+
+.star-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text);
+  padding: 0;
+  line-height: 1;
+}
+
+.star-button.active {
+  color: #e53935;
 }
 
 .recipe-card h3 {
-  margin: 0 0 4px;
-  font-size: 17px;
+  font-size: 18px;
+  margin: 0;
 }
 
 .recipe-meta {
   margin: 0;
   color: var(--text);
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
-.recipe-actions {
+.recipe-card-footer {
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-size: 18px;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
 }
 
-.recipe-actions button,
-.recipe-actions a {
+.recipe-card-footer a,
+.recipe-card-footer button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: none;
   cursor: pointer;
   color: var(--text);
   text-decoration: none;
-  line-height: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 0;
+}
+
+.recipe-card-footer a:hover {
+  color: var(--accent);
+}
+
+.recipe-card-footer button:hover {
+  color: var(--danger);
 }

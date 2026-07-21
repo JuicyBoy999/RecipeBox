@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import Navbar from "../component/Navbar";
+import Sidebar from "../component/Sidebar";
+import { EditIcon, TrashIcon, RefreshIcon, PlusIcon } from "../component/icons";
 import { getPantryItems, deletePantryItem } from "../service/Api";
 import "../component/Modal.css";
 import "./Pantry.css";
@@ -41,52 +42,60 @@ function Pantry() {
   };
 
   return (
-    <div>
-      <Navbar />
-      <div className="pantry-page">
-        <div className="pantry-header">
-          <h1>Pantry</h1>
-          <div className="pantry-header-actions">
-            <button onClick={loadItems} title="Refresh">
-              ⟳
-            </button>
-            <Link to="/pantry/new" className="add-button" title="Add item">
-              +
-            </Link>
+    <div className="app-shell">
+      <Sidebar />
+      <main className="app-main">
+        <div className="app-main-inner">
+          <div className="pantry-header">
+            <div>
+              <p className="eyebrow">Inventory</p>
+              <h1>Pantry</h1>
+            </div>
+            <div className="pantry-header-actions">
+              <button className="icon-button" onClick={loadItems} title="Refresh">
+                <RefreshIcon />
+              </button>
+              <Link to="/pantry/new" className="primary-button">
+                <PlusIcon /> Add Item
+              </Link>
+            </div>
           </div>
-        </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : items.length === 0 ? (
-          <p className="empty-state">No pantry items yet. Tap + to add one.</p>
-        ) : (
-          <div className="pantry-list">
-            {items.map((item) => (
-              <div className="pantry-card" key={item.id}>
-                <div>
-                  <h3>{item.name}</h3>
-                  {Number(item.quantity) <= 0 ? (
-                    <p className="out-of-stock">Out of stock</p>
-                  ) : (
-                    <p className="pantry-meta">
-                      {item.quantity} {item.unit}
-                    </p>
-                  )}
+          {loading ? (
+            <p className="hint">Loading...</p>
+          ) : items.length === 0 ? (
+            <div className="empty-state">
+              <h3>No pantry items yet</h3>
+              <p>Add ingredients you have on hand to track what's running low.</p>
+            </div>
+          ) : (
+            <div className="pantry-grid">
+              {items.map((item) => (
+                <div className="pantry-card" key={item.id}>
+                  <div>
+                    <h3>{item.name}</h3>
+                    {Number(item.quantity) <= 0 ? (
+                      <span className="badge danger">Out of stock</span>
+                    ) : (
+                      <span className="badge">
+                        {item.quantity} {item.unit}
+                      </span>
+                    )}
+                  </div>
+                  <div className="pantry-card-footer">
+                    <Link to={`/pantry/${item.id}/edit`} title="Edit">
+                      <EditIcon /> Edit
+                    </Link>
+                    <button onClick={() => setItemToDelete(item)} title="Delete">
+                      <TrashIcon /> Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="pantry-actions">
-                  <Link to={`/pantry/${item.id}/edit`} title="Edit">
-                    ✎
-                  </Link>
-                  <button onClick={() => setItemToDelete(item)} title="Delete">
-                    🗑
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
 
       {itemToDelete && (
         <div className="modal-overlay">

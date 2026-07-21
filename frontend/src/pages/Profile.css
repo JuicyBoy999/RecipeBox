@@ -1,71 +1,53 @@
-.profile-page {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
-  text-align: left;
-}
-
-.profile-page h1 {
-  margin: 0 0 24px;
-  font-size: 26px;
-}
-
-.profile-page form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.profile-page input {
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--code-bg);
-  color: var(--text-h);
-  font-size: 16px;
-  box-sizing: border-box;
-}
-
-.profile-page input:disabled {
-  opacity: 0.6;
-}
-
-.profile-page button[type="submit"] {
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
-.profile-page button[type="submit"]:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.danger-zone {
+  margin-top: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--danger-bg);
+  background: var(--danger-bg);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
 }
 
-.secondary-button,
-.danger-button {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 12px;
-  background: transparent;
+.danger-zone h3 {
+  font-size: 15px;
+  color: var(--danger);
+  margin-bottom: 4px;
 }
 
-.secondary-button {
-  border: 1px solid var(--border);
+.danger-zone p {
   color: var(--text);
+  font-size: 13.5px;
 }
 
 .danger-button {
-  border: 1px solid #e53935;
-  color: #e53935;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.danger-button:hover {
+  background: var(--danger);
+  color: #fff;
 }
