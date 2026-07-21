@@ -78,47 +78,45 @@ function AddEditRecipe() {
 
   return (
     <div className="form-page">
-      <div className="form-card">
-        <Link to="/dashboard" className="back-link">
-          ← Back
-        </Link>
-        <h1>{isEditMode ? "Edit Recipe" : "Add Recipe"}</h1>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Recipe title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <input
-            type="number"
-            placeholder="Cook time (minutes)"
-            value={cookTimeMinutes}
-            onChange={(e) => setCookTimeMinutes(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Category (e.g. Breakfast, Dessert)"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-          <textarea
-            placeholder="Ingredients (one per line)"
-            rows={4}
-            value={ingredients}
-            onChange={(e) => setIngredients(e.target.value)}
-          />
-          <textarea
-            placeholder="Instructions"
-            rows={6}
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-          />
-          <button type="submit" disabled={saving}>
-            {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Recipe"}
-          </button>
-        </form>
-      </div>
+      <Link to="/dashboard" className="back-link">
+        ← Back
+      </Link>
+      <h1>{isEditMode ? "Edit Recipe" : "Add Recipe"}</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Recipe title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Cook time (minutes)"
+          value={cookTimeMinutes}
+          onChange={(e) => setCookTimeMinutes(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Category (e.g. Breakfast, Dessert)"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+        <textarea
+          placeholder="Ingredients (one per line)"
+          rows={4}
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
+        />
+        <textarea
+          placeholder="Instructions"
+          rows={6}
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
+        />
+        <button type="submit" disabled={saving}>
+          {saving ? "Saving..." : isEditMode ? "Save Changes" : "Add Recipe"}
+        </button>
+      </form>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AddEditRecipe from "./pages/AddEditRecipe";
 import Pantry from "./pages/Pantry";
+import AddEditPantryItem from "./pages/AddEditPantryItem";
 import ProtectedRoute from "./service/ProtectedRoute";
 
 function RootRedirect() {
@@ -49,6 +50,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Pantry />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pantry/new"
+          element={
+            <ProtectedRoute>
+              <AddEditPantryItem />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pantry/:id/edit"
+          element={
+            <ProtectedRoute>
+              <AddEditPantryItem />
             </ProtectedRoute>
           }
         />
