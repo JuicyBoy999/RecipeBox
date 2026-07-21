@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import AddEditRecipe from "./pages/AddEditRecipe";
 import ProtectedRoute from "./service/ProtectedRoute";
 
 function RootRedirect() {
@@ -23,6 +24,22 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recipes/new"
+          element={
+            <ProtectedRoute>
+              <AddEditRecipe />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/recipes/:id/edit"
+          element={
+            <ProtectedRoute>
+              <AddEditRecipe />
             </ProtectedRoute>
           }
         />
