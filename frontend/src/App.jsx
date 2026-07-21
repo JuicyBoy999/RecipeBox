@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import AddEditRecipe from "./pages/AddEditRecipe";
+import Pantry from "./pages/Pantry";
 import ProtectedRoute from "./service/ProtectedRoute";
 
 function RootRedirect() {
@@ -40,6 +41,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AddEditRecipe />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pantry"
+          element={
+            <ProtectedRoute>
+              <Pantry />
             </ProtectedRoute>
           }
         />

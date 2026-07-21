@@ -1,0 +1,97 @@
+.pantry-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  text-align: left;
+}
+
+.pantry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.pantry-header h1 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.pantry-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pantry-header-actions button,
+.pantry-header-actions .add-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 18px;
+  text-decoration: none;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text);
+  padding: 40px 0;
+}
+
+.pantry-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pantry-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+}
+
+.pantry-card h3 {
+  margin: 0 0 4px;
+  font-size: 17px;
+}
+
+.pantry-meta {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.out-of-stock {
+  margin: 0;
+  color: #e53935;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pantry-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 18px;
+}
+
+.pantry-actions button,
+.pantry-actions a {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+  text-decoration: none;
+  line-height: 1;
+}

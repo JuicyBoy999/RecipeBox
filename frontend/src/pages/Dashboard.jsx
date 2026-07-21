@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Navbar from "../component/Navbar";
 import { getRecipes, deleteRecipe, toggleFavorite } from "../service/Api";
+import "../component/Modal.css";
 import "./Dashboard.css";
 
 function Dashboard() {
