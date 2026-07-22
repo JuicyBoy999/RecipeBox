@@ -13,9 +13,15 @@ CREATE TABLE IF NOT EXISTS recipes (
     instructions TEXT,
     cook_time_minutes INTEGER DEFAULT 0,
     category VARCHAR(100),
-    is_favorite BOOLEAN DEFAULT FALSE,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS recipe_favorites (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    recipe_id INTEGER NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (user_id, recipe_id)
 );
 
 CREATE TABLE IF NOT EXISTS pantry_items (

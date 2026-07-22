@@ -17,16 +17,37 @@ const createRecipe = async (
 
 const getAllRecipesByUser = async (userId) => {
   const result = await pool.query(
-    "SELECT * FROM recipes WHERE user_id = $1 ORDER BY created_at DESC",
+    `SELECT r.*, u.name AS author_name, TRUE AS is_own,
+       EXISTS (SELECT 1 FROM recipe_favorites f WHERE f.recipe_id = r.id AND f.user_id = $1) AS is_favorite
+     FROM recipes r
+     JOIN users u ON u.id = r.user_id
+     WHERE r.user_id = $1
+     ORDER BY r.created_at DESC`,
     [userId],
   );
   return result.rows;
 };
 
-const getRecipeById = async (id, userId) => {
+const getAllRecipesForFeed = async (currentUserId) => {
   const result = await pool.query(
-    "SELECT * FROM recipes WHERE id = $1 AND user_id = $2",
-    [id, userId],
+    `SELECT r.*, u.name AS author_name, (r.user_id = $1) AS is_own,
+       EXISTS (SELECT 1 FROM recipe_favorites f WHERE f.recipe_id = r.id AND f.user_id = $1) AS is_favorite
+     FROM recipes r
+     JOIN users u ON u.id = r.user_id
+     ORDER BY r.created_at DESC`,
+    [currentUserId],
+  );
+  return result.rows;
+};
+
+const getRecipeById = async (id, currentUserId) => {
+  const result = await pool.query(
+    `SELECT r.*, u.name AS author_name, (r.user_id = $2) AS is_own,
+       EXISTS (SELECT 1 FROM recipe_favorites f WHERE f.recipe_id = r.id AND f.user_id = $2) AS is_favorite
+     FROM recipes r
+     JOIN users u ON u.id = r.user_id
+     WHERE r.id = $1`,
+    [id, currentUserId],
   );
   return result.rows[0];
 };
@@ -47,10 +68,18 @@ const updateRecipeById = async (
   return result.rows[0];
 };
 
-const updateFavoriteById = async (id, userId, isFavorite) => {
+const addFavorite = async (userId, recipeId) => {
   const result = await pool.query(
-    "UPDATE recipes SET is_favorite = $1 WHERE id = $2 AND user_id = $3 RETURNING *",
-    [isFavorite, id, userId],
+    "INSERT INTO recipe_favorites (user_id, recipe_id) VALUES ($1, $2) ON CONFLICT (user_id, recipe_id) DO NOTHING RETURNING *",
+    [userId, recipeId],
+  );
+  return result.rows[0];
+};
+
+const removeFavorite = async (userId, recipeId) => {
+  const result = await pool.query(
+    "DELETE FROM recipe_favorites WHERE user_id = $1 AND recipe_id = $2 RETURNING *",
+    [userId, recipeId],
   );
   return result.rows[0];
 };
@@ -66,8 +95,10 @@ const deleteRecipeById = async (id, userId) => {
 module.exports = {
   createRecipe,
   getAllRecipesByUser,
+  getAllRecipesForFeed,
   getRecipeById,
   updateRecipeById,
-  updateFavoriteById,
+  addFavorite,
+  removeFavorite,
   deleteRecipeById,
 };

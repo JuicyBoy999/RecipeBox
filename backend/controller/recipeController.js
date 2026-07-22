@@ -1,9 +1,11 @@
 const {
   createRecipe,
   getAllRecipesByUser,
+  getAllRecipesForFeed,
   getRecipeById,
   updateRecipeById,
-  updateFavoriteById,
+  addFavorite,
+  removeFavorite,
   deleteRecipeById,
 } = require("../model/recipeModel");
 
@@ -33,8 +35,11 @@ const addRecipe = async (req, res) => {
 
 const getRecipes = async (req, res) => {
   try {
-    const { category, favorite, search } = req.query;
-    let recipes = await getAllRecipesByUser(req.user.id);
+    const { category, favorite, search, scope } = req.query;
+    let recipes =
+      scope === "all"
+        ? await getAllRecipesForFeed(req.user.id)
+        : await getAllRecipesByUser(req.user.id);
     if (category) {
       recipes = recipes.filter((r) => r.category === category);
     }
@@ -94,11 +99,18 @@ const updateRecipe = async (req, res) => {
 const toggleFavorite = async (req, res) => {
   try {
     const { isFavorite } = req.body;
-    const recipe = await updateFavoriteById(req.params.id, req.user.id, !!isFavorite);
+    const recipe = await getRecipeById(req.params.id, req.user.id);
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
-    res.status(200).json({ message: "Favorite updated", recipe });
+    if (isFavorite) {
+      await addFavorite(req.user.id, req.params.id);
+    } else {
+      await removeFavorite(req.user.id, req.params.id);
+    }
+    res
+      .status(200)
+      .json({ message: "Favorite updated", recipe: { ...recipe, is_favorite: !!isFavorite } });
   } catch (e) {
     res.status(500).json({ message: "Failed to update favorite", error: e.message });
   }

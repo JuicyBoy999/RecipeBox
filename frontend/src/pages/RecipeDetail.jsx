@@ -69,7 +69,10 @@ function RecipeDetail() {
                 <div>
                   {recipe.category && <span className="badge">{recipe.category}</span>}
                   <h1>{recipe.title}</h1>
-                  <p className="recipe-detail-meta">{recipe.cook_time_minutes} min</p>
+                  <p className="recipe-detail-meta">
+                    {recipe.cook_time_minutes} min
+                    {!recipe.is_own && <span className="recipe-author"> · by {recipe.author_name}</span>}
+                  </p>
                 </div>
                 <div className="recipe-detail-actions">
                   <button
@@ -79,16 +82,20 @@ function RecipeDetail() {
                   >
                     <StarIcon filled={recipe.is_favorite} />
                   </button>
-                  <Link to={`/recipes/${recipe.id}/edit`} className="icon-button" title="Edit">
-                    <EditIcon />
-                  </Link>
-                  <button
-                    className="icon-button"
-                    onClick={() => setShowDeleteConfirm(true)}
-                    title="Delete"
-                  >
-                    <TrashIcon />
-                  </button>
+                  {recipe.is_own && (
+                    <>
+                      <Link to={`/recipes/${recipe.id}/edit`} className="icon-button" title="Edit">
+                        <EditIcon />
+                      </Link>
+                      <button
+                        className="icon-button"
+                        onClick={() => setShowDeleteConfirm(true)}
+                        title="Delete"
+                      >
+                        <TrashIcon />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 

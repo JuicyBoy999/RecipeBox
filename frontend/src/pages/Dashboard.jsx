@@ -10,16 +10,17 @@ import "./Dashboard.css";
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [scope, setScope] = useState("mine");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [search, setSearch] = useState("");
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const userName = localStorage.getItem("userName");
 
-  const loadRecipes = async () => {
+  const loadRecipes = async (activeScope) => {
     setLoading(true);
     try {
-      const response = await getRecipes();
+      const response = await getRecipes({ scope: activeScope });
       setRecipes(response.data.recipes);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to load recipes");
@@ -29,8 +30,9 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    loadRecipes();
-  }, []);
+    setSelectedCategory(null);
+    loadRecipes(scope);
+  }, [scope]);
 
   const categories = useMemo(() => {
     const set = new Set(recipes.filter((r) => r.category).map((r) => r.category));
@@ -89,6 +91,21 @@ function Dashboard() {
             </div>
           </div>
 
+          <div className="scope-toggle">
+            <button
+              className={scope === "mine" ? "scope-tab active" : "scope-tab"}
+              onClick={() => setScope("mine")}
+            >
+              My Recipes
+            </button>
+            <button
+              className={scope === "all" ? "scope-tab active" : "scope-tab"}
+              onClick={() => setScope("all")}
+            >
+              Everyone
+            </button>
+          </div>
+
           <div className="dashboard-toolbar">
             <div className="category-chips">
               <button
@@ -109,7 +126,7 @@ function Dashboard() {
             </div>
             <div className="dashboard-toolbar-actions">
               <span className="recipe-count">{recipes.length} recipes</span>
-              <button className="icon-button" onClick={loadRecipes} title="Refresh">
+              <button className="icon-button" onClick={() => loadRecipes(scope)} title="Refresh">
                 <RefreshIcon />
               </button>
               <button
@@ -150,15 +167,20 @@ function Dashboard() {
                   <Link to={`/recipes/${recipe.id}`} className="recipe-card-title">
                     <h3>{recipe.title}</h3>
                   </Link>
-                  <p className="recipe-meta">{recipe.cook_time_minutes} min</p>
-                  <div className="recipe-card-footer">
-                    <Link to={`/recipes/${recipe.id}/edit`} title="Edit">
-                      <EditIcon /> Edit
-                    </Link>
-                    <button onClick={() => setRecipeToDelete(recipe)} title="Delete">
-                      <TrashIcon /> Delete
-                    </button>
-                  </div>
+                  <p className="recipe-meta">
+                    {recipe.cook_time_minutes} min
+                    {!recipe.is_own && <span className="recipe-author"> · by {recipe.author_name}</span>}
+                  </p>
+                  {recipe.is_own && (
+                    <div className="recipe-card-footer">
+                      <Link to={`/recipes/${recipe.id}/edit`} title="Edit">
+                        <EditIcon /> Edit
+                      </Link>
+                      <button onClick={() => setRecipeToDelete(recipe)} title="Delete">
+                        <TrashIcon /> Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
