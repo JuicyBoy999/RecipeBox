@@ -51,3 +51,55 @@
   background: var(--danger);
   color: #fff;
 }
+
+.profile-section {
+  max-width: 760px;
+  margin-top: 40px;
+}
+
+.profile-section h2 {
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.profile-recipe-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-recipe-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.profile-recipe-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-h);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+
+.profile-recipe-title:hover {
+  color: var(--accent);
+}
+
+.profile-recipe-title svg {
+  color: #e53935;
+  flex-shrink: 0;
+}
+
+.profile-recipe-author {
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+}

@@ -2,10 +2,30 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Sidebar from "../component/Sidebar";
-import { StarIcon, EditIcon, TrashIcon, RefreshIcon, SearchIcon } from "../component/icons";
-import { getRecipes, deleteRecipe, toggleFavorite } from "../service/Api";
+import {
+  StarIcon,
+  EditIcon,
+  TrashIcon,
+  RefreshIcon,
+  SearchIcon,
+  PantryFilterIcon,
+  LockIcon,
+} from "../component/icons";
+import { getRecipes, deleteRecipe, toggleFavorite, getPantryItems } from "../service/Api";
 import "../component/Modal.css";
 import "./Dashboard.css";
+
+function matchPercent(recipe, pantryNames) {
+  const lines = (recipe.ingredients || "")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  if (!lines.length) return 0;
+  const matched = lines.filter((line) =>
+    pantryNames.some((name) => line.toLowerCase().includes(name)),
+  ).length;
+  return Math.round((matched / lines.length) * 100);
+}
 
 function Dashboard() {
   const [recipes, setRecipes] = useState([]);
@@ -13,6 +33,8 @@ function Dashboard() {
   const [scope, setScope] = useState("mine");
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [useMyPantry, setUseMyPantry] = useState(false);
+  const [pantryItems, setPantryItems] = useState([]);
   const [search, setSearch] = useState("");
   const [recipeToDelete, setRecipeToDelete] = useState(null);
   const userName = localStorage.getItem("userName");
@@ -34,17 +56,40 @@ function Dashboard() {
     loadRecipes(scope);
   }, [scope]);
 
+  useEffect(() => {
+    getPantryItems()
+      .then((response) => setPantryItems(response.data.items))
+      .catch(() => setPantryItems([]));
+  }, []);
+
+  const pantryNames = useMemo(
+    () => pantryItems.map((item) => item.name.toLowerCase()),
+    [pantryItems],
+  );
+
   const categories = useMemo(() => {
     const set = new Set(recipes.filter((r) => r.category).map((r) => r.category));
     return [...set];
   }, [recipes]);
 
   const visibleRecipes = useMemo(() => {
-    return recipes
+    let list = recipes
       .filter((r) => !selectedCategory || r.category === selectedCategory)
       .filter((r) => !showFavoritesOnly || r.is_favorite)
-      .filter((r) => !search || r.title.toLowerCase().includes(search.toLowerCase()));
-  }, [recipes, selectedCategory, showFavoritesOnly, search]);
+      .filter(
+        (r) =>
+          !search ||
+          r.title.toLowerCase().includes(search.toLowerCase()) ||
+          (r.description || "").toLowerCase().includes(search.toLowerCase()),
+      );
+    if (useMyPantry) {
+      list = list
+        .map((r) => ({ ...r, matchPercent: matchPercent(r, pantryNames) }))
+        .filter((r) => r.matchPercent > 0)
+        .sort((a, b) => b.matchPercent - a.matchPercent);
+    }
+    return list;
+  }, [recipes, selectedCategory, showFavoritesOnly, search, useMyPantry, pantryNames]);
 
   const handleToggleFavorite = async (recipe) => {
     try {
@@ -84,7 +129,7 @@ function Dashboard() {
               <SearchIcon />
               <input
                 type="text"
-                placeholder="Search recipes by title"
+                placeholder="Search recipes by title or description"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -125,7 +170,7 @@ function Dashboard() {
               ))}
             </div>
             <div className="dashboard-toolbar-actions">
-              <span className="recipe-count">{recipes.length} recipes</span>
+              <span className="recipe-count">{visibleRecipes.length} recipes</span>
               <button className="icon-button" onClick={() => loadRecipes(scope)} title="Refresh">
                 <RefreshIcon />
               </button>
@@ -135,6 +180,13 @@ function Dashboard() {
                 title="Show favorites only"
               >
                 <StarIcon filled={showFavoritesOnly} />
+              </button>
+              <button
+                className={useMyPantry ? "icon-button active" : "icon-button"}
+                onClick={() => setUseMyPantry((prev) => !prev)}
+                title="Use my pantry — only show recipes I can make"
+              >
+                <PantryFilterIcon />
               </button>
             </div>
           </div>
@@ -147,15 +199,30 @@ function Dashboard() {
               <p>
                 {recipes.length === 0
                   ? "Add your first recipe to get started."
-                  : "Try a different category, search, or clear filters."}
+                  : useMyPantry
+                    ? "None of your recipes match what's in your pantry right now."
+                    : "Try a different category, search, or clear filters."}
               </p>
             </div>
           ) : (
             <div className="recipe-grid">
               {visibleRecipes.map((recipe) => (
                 <div className="recipe-card" key={recipe.id}>
+                  {recipe.image_url && (
+                    <img src={recipe.image_url} alt={recipe.title} className="recipe-card-image" />
+                  )}
                   <div className="recipe-card-top">
-                    {recipe.category && <span className="badge">{recipe.category}</span>}
+                    <div className="recipe-card-badges">
+                      {recipe.category && <span className="badge">{recipe.category}</span>}
+                      {useMyPantry && (
+                        <span className="badge">{recipe.matchPercent}% match</span>
+                      )}
+                      {recipe.is_own && !recipe.is_public && (
+                        <span className="badge" title="Private">
+                          <LockIcon width={12} height={12} />
+                        </span>
+                      )}
+                    </div>
                     <button
                       className={recipe.is_favorite ? "star-button active" : "star-button"}
                       onClick={() => handleToggleFavorite(recipe)}
@@ -167,6 +234,7 @@ function Dashboard() {
                   <Link to={`/recipes/${recipe.id}`} className="recipe-card-title">
                     <h3>{recipe.title}</h3>
                   </Link>
+                  {recipe.description && <p className="recipe-description">{recipe.description}</p>}
                   <p className="recipe-meta">
                     {recipe.cook_time_minutes} min
                     {!recipe.is_own && <span className="recipe-author"> · by {recipe.author_name}</span>}

@@ -2,6 +2,7 @@ const {
   createRecipe,
   getAllRecipesByUser,
   getAllRecipesForFeed,
+  getFavoriteRecipesByUser,
   getRecipeById,
   updateRecipeById,
   addFavorite,
@@ -11,20 +12,41 @@ const {
 
 const addRecipe = async (req, res) => {
   try {
-    const { title, ingredients, instructions, cookTimeMinutes, category } = req.body;
+    const {
+      title,
+      description,
+      ingredients,
+      instructions,
+      prepTimeMinutes,
+      cookTimeMinutes,
+      servings,
+      category,
+      imageUrl,
+      isPublic,
+    } = req.body;
     if (!title) {
       return res.status(400).json({ message: "Recipe title is required" });
     }
+    const prepTime = Number(prepTimeMinutes) || 0;
     const cookTime = Number(cookTimeMinutes) || 0;
-    if (cookTime < 0) {
-      return res.status(400).json({ message: "Cook time must be a positive number" });
+    const servingsCount = Number(servings) || 1;
+    if (prepTime < 0 || cookTime < 0) {
+      return res.status(400).json({ message: "Prep and cook time must be positive numbers" });
+    }
+    if (servingsCount < 1) {
+      return res.status(400).json({ message: "Servings must be at least 1" });
     }
     const recipe = await createRecipe(
       title,
+      description || "",
       ingredients || "",
       instructions || "",
+      prepTime,
       cookTime,
+      servingsCount,
       category || "",
+      imageUrl || "",
+      isPublic !== false,
       req.user.id,
     );
     res.status(201).json({ message: "Recipe added successfully", recipe });
@@ -36,10 +58,14 @@ const addRecipe = async (req, res) => {
 const getRecipes = async (req, res) => {
   try {
     const { category, favorite, search, scope } = req.query;
-    let recipes =
-      scope === "all"
-        ? await getAllRecipesForFeed(req.user.id)
-        : await getAllRecipesByUser(req.user.id);
+    let recipes;
+    if (scope === "all") {
+      recipes = await getAllRecipesForFeed(req.user.id);
+    } else if (scope === "favorites") {
+      recipes = await getFavoriteRecipesByUser(req.user.id);
+    } else {
+      recipes = await getAllRecipesByUser(req.user.id);
+    }
     if (category) {
       recipes = recipes.filter((r) => r.category === category);
     }
@@ -48,7 +74,11 @@ const getRecipes = async (req, res) => {
     }
     if (search) {
       const keyword = search.toLowerCase();
-      recipes = recipes.filter((r) => r.title.toLowerCase().includes(keyword));
+      recipes = recipes.filter(
+        (r) =>
+          r.title.toLowerCase().includes(keyword) ||
+          (r.description || "").toLowerCase().includes(keyword),
+      );
     }
     res.status(200).json({ message: "Recipes fetched", recipes });
   } catch (e) {
@@ -70,22 +100,43 @@ const getRecipe = async (req, res) => {
 
 const updateRecipe = async (req, res) => {
   try {
-    const { title, ingredients, instructions, cookTimeMinutes, category } = req.body;
+    const {
+      title,
+      description,
+      ingredients,
+      instructions,
+      prepTimeMinutes,
+      cookTimeMinutes,
+      servings,
+      category,
+      imageUrl,
+      isPublic,
+    } = req.body;
     if (!title) {
       return res.status(400).json({ message: "Recipe title is required" });
     }
+    const prepTime = Number(prepTimeMinutes) || 0;
     const cookTime = Number(cookTimeMinutes) || 0;
-    if (cookTime < 0) {
-      return res.status(400).json({ message: "Cook time must be a positive number" });
+    const servingsCount = Number(servings) || 1;
+    if (prepTime < 0 || cookTime < 0) {
+      return res.status(400).json({ message: "Prep and cook time must be positive numbers" });
+    }
+    if (servingsCount < 1) {
+      return res.status(400).json({ message: "Servings must be at least 1" });
     }
     const recipe = await updateRecipeById(
       req.params.id,
       req.user.id,
       title,
+      description || "",
       ingredients || "",
       instructions || "",
+      prepTime,
       cookTime,
+      servingsCount,
       category || "",
+      imageUrl || "",
+      isPublic !== false,
     );
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });

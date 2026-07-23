@@ -120,3 +120,42 @@ export function SearchIcon(props) {
     </svg>
   );
 }
+
+export function ShareIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="18" cy="5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="19" r="2.5" />
+      <path d="M8.2 10.7 15.8 6.3M8.2 13.3l7.6 4.4" />
+    </svg>
+  );
+}
+
+export function GlobeIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M3.5 12h17M12 3.5c2.4 2.4 3.6 5.3 3.6 8.5s-1.2 6.1-3.6 8.5c-2.4-2.4-3.6-5.3-3.6-8.5S9.6 5.9 12 3.5Z" />
+    </svg>
+  );
+}
+
+export function LockIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="5" y="11" width="14" height="9" rx="2" />
+      <path d="M8 11V7.5a4 4 0 0 1 8 0V11" />
+    </svg>
+  );
+}
+
+export function PantryFilterIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 3h12l-1 5.5H7L6 3Z" />
+      <path d="M6.5 8.5 7 20a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l.5-11.5" />
+      <path d="M9 12h6" />
+    </svg>
+  );
+}

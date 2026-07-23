@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Sidebar from "../component/Sidebar";
-import { ArrowLeftIcon, EditIcon, TrashIcon, StarIcon } from "../component/icons";
+import {
+  ArrowLeftIcon,
+  EditIcon,
+  TrashIcon,
+  StarIcon,
+  ShareIcon,
+  GlobeIcon,
+  LockIcon,
+} from "../component/icons";
 import { getRecipeById, deleteRecipe, toggleFavorite } from "../service/Api";
 import "../component/Modal.css";
 import "./RecipeDetail.css";
@@ -50,6 +58,24 @@ function RecipeDetail() {
     }
   };
 
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: recipe.title, url: shareUrl });
+      } catch {
+        // user cancelled the share sheet
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Recipe link copied to clipboard");
+    } catch {
+      toast.error("Couldn't copy the link");
+    }
+  };
+
   return (
     <div className="app-shell">
       <Sidebar />
@@ -65,16 +91,32 @@ function RecipeDetail() {
             <p className="hint">Recipe not found.</p>
           ) : (
             <div className="recipe-detail-card">
+              {recipe.image_url && (
+                <img src={recipe.image_url} alt={recipe.title} className="recipe-detail-image" />
+              )}
               <div className="recipe-detail-header">
                 <div>
-                  {recipe.category && <span className="badge">{recipe.category}</span>}
+                  <div className="recipe-detail-badges">
+                    {recipe.category && <span className="badge">{recipe.category}</span>}
+                    {recipe.is_own && (
+                      <span className="badge">
+                        {recipe.is_public ? <GlobeIcon width={13} height={13} /> : <LockIcon width={13} height={13} />}
+                        {recipe.is_public ? " Public" : " Private"}
+                      </span>
+                    )}
+                  </div>
                   <h1>{recipe.title}</h1>
+                  {recipe.description && <p className="recipe-detail-description">{recipe.description}</p>}
                   <p className="recipe-detail-meta">
-                    {recipe.cook_time_minutes} min
+                    Prep {recipe.prep_time_minutes} min · Cook {recipe.cook_time_minutes} min · Serves{" "}
+                    {recipe.servings}
                     {!recipe.is_own && <span className="recipe-author"> · by {recipe.author_name}</span>}
                   </p>
                 </div>
                 <div className="recipe-detail-actions">
+                  <button className="icon-button" onClick={handleShare} title="Share">
+                    <ShareIcon />
+                  </button>
                   <button
                     className={recipe.is_favorite ? "icon-button active" : "icon-button"}
                     onClick={handleToggleFavorite}
@@ -119,7 +161,15 @@ function RecipeDetail() {
                 <section>
                   <h3>Instructions</h3>
                   {recipe.instructions ? (
-                    <p className="recipe-instructions">{recipe.instructions}</p>
+                    <ol className="recipe-instructions">
+                      {recipe.instructions
+                        .split("\n")
+                        .map((line) => line.trim())
+                        .filter(Boolean)
+                        .map((line, i) => (
+                          <li key={i}>{line}</li>
+                        ))}
+                    </ol>
                   ) : (
                     <p className="hint">No instructions added.</p>
                   )}

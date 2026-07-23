@@ -9,10 +9,15 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS recipes (
     id SERIAL PRIMARY KEY,
     title VARCHAR(150) NOT NULL,
+    description TEXT,
     ingredients TEXT,
     instructions TEXT,
+    prep_time_minutes INTEGER DEFAULT 0,
     cook_time_minutes INTEGER DEFAULT 0,
+    servings INTEGER DEFAULT 1,
     category VARCHAR(100),
+    image_url TEXT,
+    is_public BOOLEAN DEFAULT TRUE,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW()
 );

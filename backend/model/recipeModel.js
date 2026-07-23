@@ -2,15 +2,35 @@ const pool = require("../database/db");
 
 const createRecipe = async (
   title,
+  description,
   ingredients,
   instructions,
+  prepTimeMinutes,
   cookTimeMinutes,
+  servings,
   category,
+  imageUrl,
+  isPublic,
   userId,
 ) => {
   const result = await pool.query(
-    "INSERT INTO recipes (title, ingredients, instructions, cook_time_minutes, category, user_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-    [title, ingredients, instructions, cookTimeMinutes, category, userId],
+    `INSERT INTO recipes
+       (title, description, ingredients, instructions, prep_time_minutes, cook_time_minutes, servings, category, image_url, is_public, user_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+     RETURNING *`,
+    [
+      title,
+      description,
+      ingredients,
+      instructions,
+      prepTimeMinutes,
+      cookTimeMinutes,
+      servings,
+      category,
+      imageUrl,
+      isPublic,
+      userId,
+    ],
   );
   return result.rows[0];
 };
@@ -34,8 +54,22 @@ const getAllRecipesForFeed = async (currentUserId) => {
        EXISTS (SELECT 1 FROM recipe_favorites f WHERE f.recipe_id = r.id AND f.user_id = $1) AS is_favorite
      FROM recipes r
      JOIN users u ON u.id = r.user_id
+     WHERE r.is_public = TRUE
      ORDER BY r.created_at DESC`,
     [currentUserId],
+  );
+  return result.rows;
+};
+
+const getFavoriteRecipesByUser = async (userId) => {
+  const result = await pool.query(
+    `SELECT r.*, u.name AS author_name, (r.user_id = $1) AS is_own, TRUE AS is_favorite
+     FROM recipes r
+     JOIN users u ON u.id = r.user_id
+     JOIN recipe_favorites f ON f.recipe_id = r.id AND f.user_id = $1
+     WHERE r.is_public = TRUE OR r.user_id = $1
+     ORDER BY f.created_at DESC`,
+    [userId],
   );
   return result.rows;
 };
@@ -46,7 +80,7 @@ const getRecipeById = async (id, currentUserId) => {
        EXISTS (SELECT 1 FROM recipe_favorites f WHERE f.recipe_id = r.id AND f.user_id = $2) AS is_favorite
      FROM recipes r
      JOIN users u ON u.id = r.user_id
-     WHERE r.id = $1`,
+     WHERE r.id = $1 AND (r.is_public = TRUE OR r.user_id = $2)`,
     [id, currentUserId],
   );
   return result.rows[0];
@@ -56,14 +90,37 @@ const updateRecipeById = async (
   id,
   userId,
   title,
+  description,
   ingredients,
   instructions,
+  prepTimeMinutes,
   cookTimeMinutes,
+  servings,
   category,
+  imageUrl,
+  isPublic,
 ) => {
   const result = await pool.query(
-    "UPDATE recipes SET title = $1, ingredients = $2, instructions = $3, cook_time_minutes = $4, category = $5 WHERE id = $6 AND user_id = $7 RETURNING *",
-    [title, ingredients, instructions, cookTimeMinutes, category, id, userId],
+    `UPDATE recipes
+     SET title = $1, description = $2, ingredients = $3, instructions = $4,
+         prep_time_minutes = $5, cook_time_minutes = $6, servings = $7,
+         category = $8, image_url = $9, is_public = $10
+     WHERE id = $11 AND user_id = $12
+     RETURNING *`,
+    [
+      title,
+      description,
+      ingredients,
+      instructions,
+      prepTimeMinutes,
+      cookTimeMinutes,
+      servings,
+      category,
+      imageUrl,
+      isPublic,
+      id,
+      userId,
+    ],
   );
   return result.rows[0];
 };
@@ -96,6 +153,7 @@ module.exports = {
   createRecipe,
   getAllRecipesByUser,
   getAllRecipesForFeed,
+  getFavoriteRecipesByUser,
   getRecipeById,
   updateRecipeById,
   addFavorite,
